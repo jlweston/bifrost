@@ -1,0 +1,13 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: auto;
+  padding: 1rem;
+}
+
+.pure-form-aligned .pure-control-group label {
+  margin: auto 1em auto 0;
+}
+
+button, input {
+  -webkit-app-region: no-drag;
+}
