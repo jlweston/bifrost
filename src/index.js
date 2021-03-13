@@ -96,7 +96,7 @@ const createWindow = async ({ show = true } = {}) => {
       click: () => { app.quit(); } 
     }
   ])
-  tray.setToolTip('ElectronHA')
+  tray.setToolTip('Bifrost')
   tray.setContextMenu(contextMenu)
 
   // Allows the main window to be restored or brought to the front on a
