@@ -1,9 +1,10 @@
-const { app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, powerMonitor, Tray } = require('electron');
 const { audio } = require('system-control');
 
-const path = require('path');
 const MQTT = require("async-mqtt");
+const path = require('path');
 const Store = require('electron-store');
+const user = require('username');
 const _ = require('underscore');
 
 const store = new Store();
@@ -109,13 +110,17 @@ const createWindow = async ({ show = true } = {}) => {
 const setUpMqtt = ({ url, username, password, baseTopic }) => {
   mqttClient = MQTT.connect(url, { username, password });
 
-  mqttClient.on("connect", () => {
+  mqttClient.on("connect", async () => {
     mqttClient.subscribe(`${baseTopic}/#`, (err) => {
       if (err) {
         console.error(`ERROR: could not subscribe to topic -> ${baseTopic}/#`);
       }
     });
+    
+    // TODO send initial values to MQTT on startup
+    mqttClient.publish(`${mqttConfig.baseTopic}/logged_in_user`, await user(), { retain: true });
 
+    // Responds to commands to set the volume on this device
     mqttClient.on('message', async (topic, message) => {
       console.debug('Received message on topic ->', topic);
       if (topic === 'electron-ha/volume/set') {
@@ -145,6 +150,17 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
+});
+
+// get currently logged in user and update lock state when screen unlocked
+powerMonitor.on('unlock-screen', async () => {
+  mqttClient.publish(`${mqttConfig.baseTopic}/logged_in_user`, await user(), { retain: true });
+  mqttClient.publish(`${mqttConfig.baseTopic}/screen_locked`, 'false', { retain: true });
+});
+
+// update lock state when screen locked
+powerMonitor.on('lock-screen', () => {
+  mqttClient.publish(`${mqttConfig.baseTopic}/screen_locked`, 'true', { retain: true });
 });
 
 ipcMain.on('mqtt-setup', async (_event, { url, username, password, baseTopic }) => {
