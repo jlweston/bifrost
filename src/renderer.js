@@ -1,12 +1,14 @@
 const submitFormButton = document.querySelector('#mqtt-setup-form');
-const responseParagraph = document.getElementById('response')
+const errorParagraph = document.getElementById('error')
+const successParagraph = document.getElementById('success')
 const volumeSlider = document.getElementById('volume')
 
 submitFormButton.addEventListener('submit', (event) => {
   event.preventDefault();   // stop the form from submitting
 
-  // Clear previous error message
-  responseParagraph.innerHTML = '';
+  // Clear previous messages
+  errorParagraph.innerHTML = '';
+  successParagraph.innerHTML = '';
   
   let url = document.getElementById('url').value;
   let username = document.getElementById('username').value;
@@ -20,7 +22,11 @@ submitFormButton.addEventListener('submit', (event) => {
 });
 
 window.myAPI.receive("mqtt-setup-error", (data) => {
-  responseParagraph.innerHTML = data
+  errorParagraph.innerHTML = data
+});
+
+window.myAPI.receive("mqtt-setup-success", (data) => {
+  successParagraph.innerHTML = data
 });
 
 // TODO success handler... hide form, change screen to success

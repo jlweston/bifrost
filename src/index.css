@@ -11,3 +11,15 @@ body {
 button, input {
   -webkit-app-region: no-drag;
 }
+
+.centered {
+  text-align: center;
+}
+
+p#error {
+  color: red;
+}
+
+p#success {
+  color: green;
+}

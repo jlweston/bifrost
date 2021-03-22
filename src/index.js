@@ -159,6 +159,10 @@ ipcMain.on('mqtt-setup', async (_event, { url, username, password, baseTopic }) 
     if (mqttClient) { mqttClient.end() }
     mqttConfig = testConfig
     setUpMqtt(mqttConfig);
+    mainWindow.webContents.postMessage('mqtt-setup-success', 'MQTT configured successfully!');
+    setTimeout(() => {
+      mainWindow.hide();
+    }, 2000);
   } catch (err) {
     mainWindow.webContents.postMessage('mqtt-setup-error', err.message);
   }
